@@ -1,3 +1,6 @@
+import ErrorExtras from "../components/ErrorExtras";
+import ErrorStats from "../components/ErrorStats";
+
 export default function Error404() {
   return (
     <div style={styles.container}>
@@ -6,6 +9,10 @@ export default function Error404() {
         <p style={styles.message}>Page Not Found</p>
         <p style={styles.description}>The page you're looking for doesn't exist or has been moved.</p>
         <a href="/" style={styles.button}>Go Home</a>
+
+        <ErrorExtras />
+
+        <ErrorStats />
       </div>
     </div>
   );
@@ -63,11 +70,4 @@ const styles = {
     border: "none",
     cursor: "pointer",
   },
-};
-
-// Add hover effect
-styles.button[':hover'] = {
-  backgroundColor: "#0056b3",
-  transform: "translateY(-2px)",
-  boxShadow: "0 5px 15px rgba(0, 123, 255, 0.3)",
 };
