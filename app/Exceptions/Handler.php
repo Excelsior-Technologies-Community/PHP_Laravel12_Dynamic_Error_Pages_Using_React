@@ -6,6 +6,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Models\ErrorVisit;
 
 class Handler extends ExceptionHandler
 {
@@ -41,19 +42,62 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        // Handle HTTP exceptions
         if ($this->isHttpException($exception)) {
+
             $statusCode = $exception->getStatusCode();
-            
-            // Check if view exists for the specific error code
+
+            /*
+        |--------------------------------------------------------------------------
+        | Store Error Visit
+        |--------------------------------------------------------------------------
+        */
+
+            ErrorVisit::create([
+
+                'status_code' => $statusCode,
+
+                'url' => $request->fullUrl(),
+
+                'ip_address' => $request->ip(),
+
+                'user_agent' => substr((string) $request->userAgent(), 0, 255),
+
+                'visited_at' => now(),
+
+            ]);
+
+            /*
+        |--------------------------------------------------------------------------
+        | Load Error View
+        |--------------------------------------------------------------------------
+        */
+
             if (view()->exists("errors.{$statusCode}")) {
-                return response()->view("errors.{$statusCode}", [], $statusCode);
+
+                return response()->view(
+
+                    "errors.{$statusCode}",
+
+                    [],
+
+                    $statusCode
+
+                );
             }
-            
-            // Fallback to generic error view
-            return response()->view('errors.generic', [
-                'exception' => $exception
-            ], $statusCode);
+
+            return response()->view(
+
+                'errors.generic',
+
+                [
+
+                    'exception' => $exception
+
+                ],
+
+                $statusCode
+
+            );
         }
 
         return parent::render($request, $exception);
