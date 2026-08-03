@@ -1,3 +1,6 @@
+import ErrorExtras from "../components/ErrorExtras";
+import ErrorStats from "../components/ErrorStats";
+
 export default function Error500() {
   const handleRefresh = () => {
     window.location.reload();
@@ -29,6 +32,10 @@ export default function Error500() {
             <li>Check back in a few minutes</li>
           </ul>
         </div>
+
+        <ErrorExtras />
+
+        <ErrorStats />
       </div>
     </div>
   );

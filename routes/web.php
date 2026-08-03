@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ErrorDashboardController;
 
 // Home Page
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Test routes for error pages
+// Test routes
 Route::get('/test-403', function () {
     abort(403, 'Unauthorized access');
 })->name('test.403');
@@ -25,7 +26,14 @@ Route::get('/simulate-error', function () {
     throw new Exception('This is a simulated server error');
 });
 
-// Catch-all route for undefined routes (will trigger 404)
+// Error Dashboard
+Route::get('/error-dashboard', [ErrorDashboardController::class, 'index'])
+    ->name('error.dashboard');
+
+// Error Statistics API
+Route::get('/error-stats', [ErrorDashboardController::class, 'stats']);
+
+// Keep this LAST
 Route::fallback(function () {
-    return abort(404);
+    abort(404);
 });
