@@ -1,130 +1,248 @@
+import React, { useState } from "react";
+import Mascot500 from "../components/mascots/Mascot500";
+import SnakeGame from "../components/games/SnakeGame";
+import ErrorReportModal from "../components/ErrorReportModal";
+import ThemeSwitcher from "../components/ThemeSwitcher";
 import ErrorExtras from "../components/ErrorExtras";
 import ErrorStats from "../components/ErrorStats";
 
 export default function Error500() {
-  const handleRefresh = () => {
-    window.location.reload();
-  };
+    const [theme, setTheme] = useState(() => {
+        return localStorage.getItem("error_page_theme") || "clean";
+    });
+    const [playGame, setPlayGame] = useState(false);
 
-  const handleContact = () => {
-    window.location.href = "mailto:support@example.com";
-  };
+    function handleThemeChange(newTheme) {
+        setTheme(newTheme);
+        localStorage.setItem("error_page_theme", newTheme);
+    }
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.box}>
-        <h1 style={styles.title}>500</h1>
-        <p style={styles.message}>Server Error</p>
-        <p style={styles.description}>Something went wrong on our end. Please try again later.</p>
-        <div style={styles.buttonGroup}>
-          <button onClick={handleRefresh} style={styles.primaryButton}>
-            Try Again
-          </button>
-          <button onClick={handleContact} style={styles.secondaryButton}>
-            Contact Support
-          </button>
+    return (
+        <div style={getContainerStyle(theme)}>
+            <div style={getBoxStyle(theme)}>
+                {/* Theme Switcher Header */}
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <ThemeSwitcher currentTheme={theme} onChangeTheme={handleThemeChange} />
+                </div>
+
+                {!playGame ? (
+                    <>
+                        {/* Smoking Server Rack Mascot */}
+                        <Mascot500 theme={theme} />
+
+                        <h1 style={getTitleStyle(theme)}>500</h1>
+                        <p style={getMessageStyle(theme)}>Server Core Malfunction</p>
+                        <p style={getDescStyle(theme)}>
+                            Our backend services suffered an unexpected exception. Our automated telemetry radar has flagged the issue for immediate developer triage.
+                        </p>
+
+                        {/* Primary Action Buttons */}
+                        <div style={buttonGroup}>
+                            <a href="/" style={primaryBtn(theme)}>
+                                🏠 Return Home
+                            </a>
+                            <button
+                                type="button"
+                                onClick={() => setPlayGame(true)}
+                                style={gameBtn(theme)}
+                            >
+                                🕹️ Play Server Snake
+                            </button>
+                        </div>
+
+                        {/* 1-Click Incident Report Modal */}
+                        <ErrorReportModal statusCode={500} theme={theme} />
+
+                        {/* Random Tips & Auto Redirect */}
+                        <ErrorExtras theme={theme} />
+
+                        {/* Live Telemetry Radar */}
+                        <ErrorStats theme={theme} />
+                    </>
+                ) : (
+                    <div>
+                        <SnakeGame onExit={() => setPlayGame(false)} theme={theme} />
+                        <button
+                            type="button"
+                            onClick={() => setPlayGame(false)}
+                            style={backBtn(theme)}
+                        >
+                            ← Back to 500 Details
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
-        <div style={styles.tips}>
-          <h4 style={styles.tipsTitle}>What you can do:</h4>
-          <ul style={styles.tipsList}>
-            <li>Refresh the page</li>
-            <li>Clear your browser cache</li>
-            <li>Check back in a few minutes</li>
-          </ul>
-        </div>
-
-        <ErrorExtras />
-
-        <ErrorStats />
-      </div>
-    </div>
-  );
+    );
 }
 
-const styles = {
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    backgroundColor: '#f8f9fa',
-    padding: '20px',
-  },
-  box: {
-    textAlign: "center",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    background: "white",
-    padding: "60px 40px",
-    borderRadius: "16px",
-    width: "100%",
-    maxWidth: "450px",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-    border: "1px solid #e0e0e0",
-  },
-  title: {
-    fontSize: "120px",
-    fontWeight: "700",
-    color: "#17a2b8",
-    margin: "0",
-    lineHeight: "1",
-  },
-  message: {
-    fontSize: "28px",
-    color: "#333",
-    margin: "20px 0 10px",
-    fontWeight: "600",
-  },
-  description: {
-    fontSize: "16px",
-    color: "#666",
-    margin: "0 0 30px",
-    lineHeight: "1.5",
-  },
-  buttonGroup: {
+function getContainerStyle(theme) {
+    if (theme === "cyberpunk") {
+        return {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+            backgroundColor: "#050811",
+            backgroundImage: "radial-gradient(#1e1b4b 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+            padding: "20px",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            transition: "all 0.3s ease",
+        };
+    }
+    if (theme === "glass") {
+        return {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+            background: "linear-gradient(135deg, #f59e0b 0%, #dc2626 100%)",
+            padding: "20px",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            transition: "all 0.3s ease",
+        };
+    }
+    return {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        backgroundColor: "#f8f9fa",
+        padding: "20px",
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        transition: "all 0.3s ease",
+    };
+}
+
+function getBoxStyle(theme) {
+    if (theme === "cyberpunk") {
+        return {
+            textAlign: "center",
+            background: "rgba(10, 15, 29, 0.95)",
+            color: "#f8fafc",
+            padding: "35px 30px",
+            borderRadius: "16px",
+            width: "100%",
+            maxWidth: "440px",
+            boxShadow: "0 0 35px rgba(245, 158, 11, 0.25), inset 0 0 15px rgba(239, 68, 68, 0.1)",
+            border: "1px solid #f59e0b",
+        };
+    }
+    if (theme === "glass") {
+        return {
+            textAlign: "center",
+            background: "rgba(255, 255, 255, 0.88)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            padding: "35px 30px",
+            borderRadius: "20px",
+            width: "100%",
+            maxWidth: "440px",
+            boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
+            border: "1px solid rgba(255, 255, 255, 0.4)",
+        };
+    }
+    return {
+        textAlign: "center",
+        background: "#ffffff",
+        padding: "35px 30px",
+        borderRadius: "16px",
+        width: "100%",
+        maxWidth: "440px",
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
+        border: "1px solid #e2e8f0",
+    };
+}
+
+function getTitleStyle(theme) {
+    if (theme === "cyberpunk") {
+        return {
+            fontSize: "80px",
+            fontWeight: "900",
+            color: "#f59e0b",
+            margin: "0",
+            lineHeight: "1",
+            textShadow: "0 0 20px rgba(245, 158, 11, 0.6)",
+            letterSpacing: "4px",
+        };
+    }
+    if (theme === "glass") {
+        return {
+            fontSize: "80px",
+            fontWeight: "900",
+            color: "#b45309",
+            margin: "0",
+            lineHeight: "1",
+            letterSpacing: "2px",
+        };
+    }
+    return {
+        fontSize: "80px",
+        fontWeight: "800",
+        color: "#d97706",
+        margin: "0",
+        lineHeight: "1",
+    };
+}
+
+function getMessageStyle(theme) {
+    return {
+        fontSize: "22px",
+        color: theme === "cyberpunk" ? "#f1f5f9" : "#1e293b",
+        margin: "12px 0 6px",
+        fontWeight: "bold",
+    };
+}
+
+function getDescStyle(theme) {
+    return {
+        fontSize: "14px",
+        color: theme === "cyberpunk" ? "#94a3b8" : "#64748b",
+        margin: "0 0 20px",
+        lineHeight: "1.5",
+    };
+}
+
+const buttonGroup = {
     display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-    marginBottom: "30px",
-  },
-  primaryButton: {
-    padding: "12px 30px",
-    backgroundColor: "#17a2b8",
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontWeight: "600",
-    fontSize: "16px",
-    cursor: "pointer",
-    transition: "all 0.3s ease",
-  },
-  secondaryButton: {
-    padding: "12px 30px",
-    backgroundColor: "transparent",
-    color: "#17a2b8",
-    border: "2px solid #17a2b8",
-    borderRadius: "8px",
-    fontWeight: "600",
-    fontSize: "16px",
-    cursor: "pointer",
-    transition: "all 0.3s ease",
-  },
-  tips: {
-    textAlign: "left",
-    backgroundColor: "#f8f9fa",
-    padding: "15px",
-    borderRadius: "8px",
-    marginTop: "20px",
-  },
-  tipsTitle: {
-    margin: "0 0 10px 0",
-    color: "#555",
-    fontSize: "16px",
-  },
-  tipsList: {
-    margin: "0",
-    paddingLeft: "20px",
-    color: "#666",
-    fontSize: "14px",
-    lineHeight: "1.6",
-  },
+    gap: "10px",
+    justifyContent: "center",
+    marginBottom: "8px",
+    flexWrap: "wrap",
 };
+
+const primaryBtn = (theme) => ({
+    display: "inline-block",
+    textDecoration: "none",
+    background: theme === "cyberpunk" ? "#f59e0b" : "#d97706",
+    color: "#ffffff",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    fontWeight: "bold",
+    fontSize: "14px",
+    border: "none",
+    cursor: "pointer",
+    boxShadow: theme === "cyberpunk" ? "0 0 15px rgba(245, 158, 11, 0.5)" : "none",
+});
+
+const gameBtn = (theme) => ({
+    background: theme === "cyberpunk" ? "rgba(245, 158, 11, 0.15)" : "#f8fafc",
+    color: theme === "cyberpunk" ? "#f59e0b" : "#0f172a",
+    border: theme === "cyberpunk" ? "1px solid #f59e0b" : "1px solid #cbd5e1",
+    padding: "10px 16px",
+    borderRadius: "8px",
+    fontWeight: "bold",
+    fontSize: "14px",
+    cursor: "pointer",
+});
+
+const backBtn = (theme) => ({
+    background: "transparent",
+    border: "none",
+    color: theme === "cyberpunk" ? "#f59e0b" : "#d97706",
+    fontWeight: "bold",
+    fontSize: "13px",
+    cursor: "pointer",
+    marginTop: "10px",
+});
